@@ -9,6 +9,15 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZU
 const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_CONTAINER_NAME);
 // create container if it was not created.
 await containerClient.createIfNotExists();
+await containerClient.setAccessPolicy('blob');
+
+//fix
+const blobClient = containerClient.getBlockBlobClient('694d1ee59b73f0cf5ff79378.avif');
+
+await blobClient.setHTTPHeaders({
+  blobContentType: "image/jpeg",
+  blobContentDisposition: "inline"
+});
 
 // For this assignment we would get all photos since the data will be very small and filter within the frontend webapp.
 const getPhotos = async (req, res) => {
@@ -58,7 +67,12 @@ const uploadPhoto = async (req, res) => {
 
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-    await blockBlobClient.uploadData(req.file.buffer);
+    await blockBlobClient.uploadData(req.file.buffer, {
+      blobHTTPHeaders: {
+        blobContentType: req.file.mimetype,
+        blobContentDisposition: 'inline',
+      },
+    });
 
     const newPhoto = await Photo.create({
       uploadedBy: userId,

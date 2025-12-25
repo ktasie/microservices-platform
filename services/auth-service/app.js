@@ -25,7 +25,7 @@ app.use('/api/v1/', loginRoute);
 if (process.env.NODE_ENV === 'development') {
   mongoose
     .connect(`mongodb://${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`)
-    .then(() => console.log('DB connection successful'))
+    .then(() => console.log('Authentication service DB connection successful'))
     .catch((err) => {
       console.log(err.message);
       process.exit();
@@ -35,7 +35,7 @@ if (process.env.NODE_ENV === 'development') {
     .connect(
       `mongodb:${process.env.MONGO_USER}:${process.env.MONGO_PASS}//${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`
     )
-    .then(() => console.log('DB connection successful'))
+    .then(() => console.log('Authentication service DB connection successful'))
     .catch((err) => {
       console.log(err.message);
       process.exit();
@@ -44,5 +44,5 @@ if (process.env.NODE_ENV === 'development') {
 
 // start webserver
 app.listen(port, () => {
-  console.log(`app listening on port ${port}`);
+  console.log(`Authication service listening on port ${port}`);
 });

@@ -11,7 +11,7 @@ const getComments = async (req, res) => {
       throw err;
     }
 
-     if (!mongoose.Types.ObjectId.isValid(imageId)) {
+    if (!mongoose.Types.ObjectId.isValid(imageId)) {
       const err = new Error('Invalid imageId.');
       err.statusCode = 400;
       throw err;
