@@ -11,14 +11,6 @@ const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_C
 await containerClient.createIfNotExists();
 await containerClient.setAccessPolicy('blob');
 
-//fix
-const blobClient = containerClient.getBlockBlobClient('694d1ee59b73f0cf5ff79378.avif');
-
-await blobClient.setHTTPHeaders({
-  blobContentType: "image/jpeg",
-  blobContentDisposition: "inline"
-});
-
 // For this assignment we would get all photos since the data will be very small and filter within the frontend webapp.
 const getPhotos = async (req, res) => {
   try {
