@@ -11,6 +11,23 @@ const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_C
 await containerClient.createIfNotExists();
 await containerClient.setAccessPolicy('blob');
 
+const getOnePhoto = async (req, res) => {
+  try {
+    const imageId = req.params.imageId;
+    const photo = await Photo.findById(imageId);
+
+    res.status(200).json({
+      status: 'Success',
+      photo,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      status: 'fail',
+      message: `${err.message}`,
+    });
+  }
+};
+
 // For this assignment we would get all photos since the data will be very small and filter within the frontend webapp.
 const getPhotos = async (req, res) => {
   try {
@@ -90,4 +107,4 @@ const uploadPhoto = async (req, res) => {
   }
 };
 
-export { getPhotos, uploadPhoto };
+export { getPhotos, uploadPhoto, getOnePhoto };
