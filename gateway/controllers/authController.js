@@ -12,6 +12,8 @@ const protect = async (req, res, next) => {
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
+    } else {
+      token = req.cookies.jwt;
     }
 
     if (!token) {
@@ -21,7 +23,7 @@ const protect = async (req, res, next) => {
     }
 
     const decoded = await promisify(jwt.verify)(token, pubKey, { algorithms: 'RS256' });
-    
+
     req.user = decoded.user;
     //console.log(req.user)
     next();
@@ -33,4 +35,41 @@ const protect = async (req, res, next) => {
   }
 };
 
-export { protect };
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const raw = JSON.stringify({ email, password });
+
+    const reqOptions = {
+      method: 'POST',
+      headers: { 'content-Type': 'application/json' },
+      body: raw,
+    };
+    const resp = await fetch('http://localhost:4001/api/v1/login', reqOptions);
+    const data = await resp.json();
+    console.log(data);
+    if (data.status === 'fail') {
+      const err = new Error(data.message);
+      err.statusCode = 401;
+      throw err;
+    }
+
+    const token = data.token;
+    const cookieOptions = {
+      expires: new Date(Date.now() + process.env.JWT_EXPIRES_IN * 3600 * 1000),
+      httpOnly: true,
+    };
+    res.cookie('jwt', token, cookieOptions);
+    res.json({
+      status: data.status,
+      token: token,
+      data: data.data,
+    });
+  } catch (err) {
+    //console.log(err.data);
+    res.status(err.statusCode).json({ status: 'fail', message: err.message });
+  }
+};
+
+export { protect, login };
