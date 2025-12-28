@@ -13,11 +13,15 @@ const signToken = (user) => {
 
 const createSignToken = (user, statusCode, res) => {
   const token = signToken(user);
+
+  // Does not need to return cookie token as it is handled by the gateway.
+  /*
   const cookieOptions = {
     expires: new Date(Date.now() + process.env.JWT_EXPIRES_IN * 3600 * 1000),
     httpOnly: true,
   };
   res.cookie('jwt', token, cookieOptions);
+  */
 
   res.status(statusCode).json({
     status: 'success',

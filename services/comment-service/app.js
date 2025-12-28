@@ -16,7 +16,6 @@ const __dirname = path.dirname(__filename);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-
 // Routes
 app.use('/api/v1/', commentRoute);
 

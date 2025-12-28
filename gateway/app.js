@@ -1,13 +1,24 @@
+import 'dotenv/config';
 import express from 'express';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import cors from 'cors';
 import morgan from 'morgan';
-import { protect } from './controllers/authController.js';
+import cookieParser from 'cookie-parser';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import { protect, login } from './controllers/authController.js';
 
 const app = express();
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
 
+app.use(cookieParser());
 app.use(morgan('dev'));
 
-app.use('/auth', createProxyMiddleware({ target: 'http://localhost:4001/api/v1/login', changeOrigin: true }));
+app.post('/auth', express.json(), login);
+
 app.use(
   '/comment',
   protect,
@@ -60,8 +71,10 @@ app.use(
 app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).json({
     status: 'fail',
-    message: err.message,
+    message: err,
   });
 });
 
-app.listen(4000, () => console.log('Proxy gateway running on port 4000'));
+const port = process.env.PORT || 4000;
+
+app.listen(port, () => console.log('Proxy gateway running on port 4000'));
