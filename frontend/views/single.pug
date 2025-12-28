@@ -1,0 +1,36 @@
+extends base
+
+block content 
+    include _header
+
+    // Image Display Page
+    #dashboard-page.page
+        .dashboard
+            // Feed
+            #feed.feed
+                .post
+                    .post-header
+                        .post-avatar
+                            img(src='/images/male.jpg' style='border-radius:50%; width:32px;')
+                        .post-username #{image.title}
+                    .post-image  
+                        img(src=`${image.imageUrl}` width=893)
+                    .post-actions
+                        button.action-btn &#x2764;&#xFE0F; 
+                        button.action-btn &#x1F4AC;
+                        button.action-btn &#x1F4E4;
+                    .post-likes #{likeCount.Likes} likes
+                    .post-caption
+                        |               #{image.caption}, 
+                        |
+                        span.username Location 
+                        |               #{image.location}, 
+                        | 
+                        span.username People Present
+                        | #{image.peoplePresent}
+                    .post-time 2 HOURS AGO
+                        br
+                        br
+                        textarea#captionInput.textarea-field(placeholder='Write a comment...')
+                        button.btn-primary(onclick='handleUpload()')
+                            | Post a Comment

@@ -1,0 +1,411 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'Billabong';
+  src: url('/font/Billabong.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #fafafa;
+  color: #262626;
+}
+
+/* Header */
+.header {
+  background: white;
+  border-bottom: 1px solid #dbdbdb;
+  padding: 12px 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.header-content {
+  max-width: 975px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 600;
+  color: #262626;
+  /* font-family: "Brush Script MT", cursive; */
+  font-family: 'Billabong', cursive;
+}
+
+.search-box {
+  padding: 8px 16px;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  background: #efefef;
+  width: 250px;
+}
+
+.nav-icons {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+/* Page Container */
+.page {
+  /* display: none; */
+  display: block;
+  margin-top: 60px;
+}
+
+.page.active {
+  display: block;
+}
+
+/* Auth Pages */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 60px);
+  padding: 20px;
+}
+
+.auth-box {
+  background: white;
+  border: 1px solid #dbdbdb;
+  padding: 40px;
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+}
+
+.auth-logo {
+  font-size: 48px;
+  /* font-weight: 600; */
+  font-weight: 600;
+  margin-bottom: 30px;
+  /* font-family: "Brush Script MT", cursive; */
+  font-family: 'Billabong', cursive;
+}
+
+.input-group {
+  margin-bottom: 12px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  background: #fafafa;
+  font-size: 14px;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+.btn-primary:hover {
+  background: #0082e0;
+}
+
+.auth-link {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #8e8e8e;
+}
+
+.auth-link a {
+  color: #0095f6;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Dashboard */
+.dashboard {
+  max-width: 935px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.stories-container {
+  background: white;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+}
+
+.story {
+  text-align: center;
+  cursor: pointer;
+}
+
+.story-avatar {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  border: 3px solid #e1306c;
+  padding: 2px;
+  background: white;
+}
+
+.story-name {
+  font-size: 12px;
+  margin-top: 4px;
+  max-width: 66px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Feed */
+.feed {
+  display: grid;
+  gap: 24px;
+}
+
+.post {
+  background: white;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  gap: 12px;
+}
+
+.post-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.post-username {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.post-image {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8e8e8e;
+}
+
+.post-actions {
+  padding: 12px 16px;
+  display: flex;
+  gap: 16px;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.post-likes {
+  padding: 0 16px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.post-caption {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.post-caption .username {
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.post-time {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #8e8e8e;
+}
+
+/* Upload Page */
+.upload-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.upload-box {
+  background: white;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+}
+
+.upload-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.upload-area {
+  border: 2px dashed #dbdbdb;
+  border-radius: 8px;
+  padding: 60px 20px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.upload-area:hover {
+  border-color: #0095f6;
+  background: #f8f9fa;
+}
+
+.upload-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.upload-text {
+  color: #8e8e8e;
+  margin-bottom: 8px;
+}
+
+.file-input {
+  display: none;
+}
+
+.textarea-field {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  background: #fafafa;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 100px;
+  margin-bottom: 16px;
+}
+
+/* Grid View */
+.grid-view {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-top: 20px;
+}
+
+.grid-item {
+  aspect-ratio: 1/1;
+  background: #f0f0f0;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.grid-item:hover {
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-box {
+    width: 150px;
+  }
+
+  .dashboard {
+    padding: 20px 0;
+  }
+
+  .post {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* space between icon and text */
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.nav-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.nav-btn a {
+  text-decoration: none;
+  color: inherit;
+}
+
+svg {
+  fill: #444;
+  width: 22px;
+  height: 22px;
+}
+
+#error {
+  text-align: left;
+  /* padding: 5px 5px; */
+  margin-bottom: 14px;
+  color: #ff0000;
+}
+
+.grid-item img {
+  width: 100%;
+  height: 210px;
+  object-fit: cover; /* 🔥 this is the key */
+  display: block;
+}
+
+.grid-item a {
+  text-decoration: none;
+  color: #444;
+}
+
+a {
+  text-decoration: none;
+}

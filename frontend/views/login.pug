@@ -1,0 +1,19 @@
+extends base
+
+block content
+    // Login Page
+    #login-page.page.active
+        .auth-container
+            .auth-box
+                .auth-logo Photo Stream
+                div#error 
+                form()
+                    .input-group
+                        input.input-field(type='text' placeholder='Email' required='' id='email')
+                    .input-group
+                        input.input-field(type='password' placeholder='Password' required='' id='password')
+                    button.btn-primary(type='submit' id='submitBtn') Log In
+                .auth-link
+                    | Don&apos;t have an account?
+                    a(href='#' id='signup') Sign up
+    script(src='/js/script.js')
