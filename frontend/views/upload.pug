@@ -1,0 +1,25 @@
+extends base
+
+block content 
+    include _header
+
+    // Upload Page
+    #upload-page.page
+        .upload-container
+            .upload-box
+                .upload-title Upload New Photo
+                .upload-area(onclick="document.getElementById('fileInput').click()")
+                    .upload-icon &#x1F4F8;
+                    .upload-text Drag photos here
+                    .upload-text(style='color: #0095f6; font-weight: 600')
+                        | Select from computer
+                input#fileInput.file-input(type='file' accept='image/*' onchange='handleFileSelect(event)' )
+                .input-group
+                    input#title.input-field(type='text' placeholder='Title' required='')
+                textarea#captionInput.textarea-field(placeholder='Write a caption...')
+                .input-group
+                    input#location.input-field(type='text' placeholder='Location' required='')
+                .input-group
+                    input#peoplePresent.input-field(type='text' placeholder='People Present' required='')
+            button#upload.btn-primary() Upload
+    script(src='/js/upload.js')

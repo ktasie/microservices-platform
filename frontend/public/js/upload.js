@@ -1,0 +1,50 @@
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) {
+    document.querySelector('.upload-area .upload-text').textContent = file.name;
+  }
+}
+
+const domStrings = {
+  title: document.querySelector('#title'),
+  captionInput: document.querySelector('#captionInput'),
+  location: document.querySelector('#location'),
+  peoplePresent: document.querySelector('#peoplePresent'),
+  fileInput: document.querySelector('#fileInput'),
+  uploadBtn: document.querySelector('#upload'),
+};
+
+const uploadForm = async (e) => {
+  try {
+    e.preventDefault();
+    // console.log('clicked')
+    //console.log(domStrings.fileInput.files[0].name);
+    const formdata = new FormData();
+    formdata.append('image', domStrings.fileInput.files[0], domStrings.fileInput.files[0].name);
+    formdata.append('title', domStrings.title.value);
+    formdata.append('caption', domStrings.captionInput.value);
+    formdata.append('location', domStrings.location.value);
+    formdata.append('peoplePresent', domStrings.peoplePresent.value);
+
+    // fetch options.
+    const requestOptions = {
+      method: 'POST',
+      body: formdata,
+      credentials: 'include',
+      redirect: 'follow',
+    };
+
+    const response = await fetch('http://localhost:4000/upload', requestOptions);
+    const result = await response.json();
+    if (result.status === 'success') {
+      console.log(result);
+    } else if (result.status === 'fail') {
+      console.log(result);
+      throw new Error(`${result.message}`);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+domStrings.uploadBtn.addEventListener('click', uploadForm);

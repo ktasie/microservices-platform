@@ -1,0 +1,44 @@
+extends base
+
+block content 
+    include _header
+
+    // Profile Page
+    #profile-page.page
+        .dashboard
+            .upload-box
+                div(style='display: flex; align-items: center; gap: 40px; margin-bottom: 30px;')
+                    // <div style="width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);"></div>
+                    div
+                        if user.role == 'admin'
+                            img(src='images/male.jpg' style='width: 100px; height: 100px; border-radius: 50%')
+                        else
+                            img(src='images/female1.jpg' style='width: 100px; height: 100px; border-radius: 50%')
+                    div(style='text-align: left')
+                        - const username = user.email.split('@')[0]
+                        h2(style='margin-bottom: 10px') #{username} - #{user.role} 
+                        div(style='display: flex; gap: 40px; margin-bottom: 20px')
+                            |
+                            div
+                                strong #{uploads.count}
+                                |  posts
+                            div
+                                strong 1.2K
+                                |  followers
+                            div
+                                strong 580
+                                |  following
+                        div(style='font-weight: 600') #{user.firstName} #{user.lastName}
+                        div(style='color: #8e8e8e') Photography enthusiast &#x1F4F8;
+                .grid-view
+                    each image in uploads.allPhotos
+                        .grid-item()
+                            a(href=`http://localhost:3000/upload/${image._id}`)
+                                img(src=`${image.imageUrl}`)
+                                h4= image.title
+                                p= image.caption
+                    //- .grid-item(style='background: #e1306c')
+                    //- .grid-item(style='background: #ffc107')
+                    //- .grid-item(style='background: #4caf50')
+                    //- .grid-item(style='background: #9c27b0')
+                    //- .grid-item(style='background: #ff5722')
