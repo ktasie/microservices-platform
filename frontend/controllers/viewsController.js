@@ -63,10 +63,26 @@ const getPhoto = async (req, res) => {
     })
   ).json();
 
-  //console.log(likeCount)
+  // get comments
+  const comment = await (
+    await fetch(`http://localhost:4000/comment/${imageId}`, {
+      method: 'GET',
+      headers: { Cookie: req.headers.cookie || '' },
+    })
+  ).json();
+
+  // console.log(comment);
+
   res
     .status(200)
-    .render('single', { title: 'image-title', pretty: true, user: req.locals, image: image.photo, likeCount });
+    .render('single', {
+      title: 'image-title',
+      pretty: true,
+      user: req.locals,
+      image: image.photo,
+      likeCount,
+      allComment: comment.data,
+    });
 };
 
 export { getLoginForm, goToDashboard, protect, uploadPhoto, getPhoto };

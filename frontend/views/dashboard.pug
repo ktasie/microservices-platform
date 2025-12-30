@@ -32,7 +32,14 @@ block content
                         div(style='color: #8e8e8e') Photography enthusiast &#x1F4F8;
                 .grid-view
                     each image in uploads.allPhotos
-                        .grid-item()
+                        .grid-item.photo-card(
+                            data-title=(image.title || '')
+                            data-caption=(image.caption || '')
+                            data-url=(image.imageUrl || '')
+                            data-id=(image._id || '')
+                            data-location=(image.location || '')
+                            data-peoplePresent=(image.peoplePresent || '')
+                        )
                             a(href=`http://localhost:3000/upload/${image._id}`)
                                 img(src=`${image.imageUrl}`)
                                 h4= image.title
@@ -42,3 +49,4 @@ block content
                     //- .grid-item(style='background: #4caf50')
                     //- .grid-item(style='background: #9c27b0')
                     //- .grid-item(style='background: #ff5722')
+    script(src="/js/live-search.js")

@@ -12,6 +12,17 @@ const domStrings = {
   peoplePresent: document.querySelector('#peoplePresent'),
   fileInput: document.querySelector('#fileInput'),
   uploadBtn: document.querySelector('#upload'),
+  notice: document.querySelector('.notice'),
+};
+
+const clearFields = () => {
+  domStrings.title.value = '';
+  domStrings.captionInput.value = '';
+  domStrings.location.value = '';
+  domStrings.peoplePresent.value = '';
+  domStrings.fileInput.value = '';
+
+  return;
 };
 
 const uploadForm = async (e) => {
@@ -35,14 +46,23 @@ const uploadForm = async (e) => {
     };
 
     const response = await fetch('http://localhost:4000/upload', requestOptions);
+    if (!response.ok) {
+      // HTTP error (4xx / 5xx)
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     const result = await response.json();
     if (result.status === 'success') {
-      console.log(result);
+      //console.log(result);
+      clearFields();
+      domStrings.notice.textContent = 'Upload was successful! ...';
+      domStrings.notice.style.backgroundColor = 'green';
     } else if (result.status === 'fail') {
-      console.log(result);
       throw new Error(`${result.message}`);
     }
   } catch (err) {
+    clearFields();
+    domStrings.notice.textContent = `${err.message}`;
+    domStrings.notice.style.backgroundColor = 'red';
     console.log(err);
   }
 };

@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const commentSchema = new mongoose.Schema({
-  authorId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: [true, 'A user id is needed to post a comment'],
+  authorEmail: {
+    type: String,
+    required: true,
   },
   imageId: {
     type: mongoose.Schema.Types.ObjectId,
