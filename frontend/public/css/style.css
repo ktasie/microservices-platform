@@ -409,3 +409,17 @@ svg {
 a {
   text-decoration: none;
 }
+
+.notice {
+  padding: 5px 10px;
+  /* border: 1px solid green; */
+  border-radius: 3px;
+  /* background-color: green; */
+  color: white;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.comment p {
+  font-size: 14px;
+}

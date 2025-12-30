@@ -44,7 +44,7 @@ const postComment = async (req, res) => {
         req.user = null;
       }
     }
-    const userId = req.user._id;
+    const authorEmail = req.user.email;
 
     // console.log(email, password);
     if (!imageId || !commentText) {
@@ -60,7 +60,7 @@ const postComment = async (req, res) => {
     }
 
     const newComment = await Comment.create({
-      authorId: userId,
+      authorEmail,
       imageId,
       comment: commentText,
     });

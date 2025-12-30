@@ -16,8 +16,8 @@ block content
                     .post-image  
                         img(src=`${image.imageUrl}` width=893)
                     .post-actions
-                        button.action-btn &#x2764;&#xFE0F; 
-                        button.action-btn &#x1F4AC;
+                        button#like.action-btn &#x1F44D; 
+                        button#disLike.action-btn  &#x1F44E;
                         button.action-btn &#x1F4E4;
                     .post-likes #{likeCount.Likes} likes
                     .post-caption
@@ -31,6 +31,17 @@ block content
                     .post-time 2 HOURS AGO
                         br
                         br
-                        textarea#captionInput.textarea-field(placeholder='Write a comment...')
-                        button.btn-primary(onclick='handleUpload()')
-                            | Post a Comment
+                        .comment
+                            each comment in allComment
+                                p
+                                    strong= comment.authorEmail
+                                    | 
+                                    | #{comment.comment}                            
+                        br
+                        form
+                            input#imageId(type='hidden' value=`${image._id}`)
+                            input#authorEmail(type='hidden' value=`${user.email}`)
+                            textarea#commentText.textarea-field(placeholder='Write a comment...')
+                            button.btn-primary()
+                                | Post a Comment
+    script(src='/js/comment.js')
