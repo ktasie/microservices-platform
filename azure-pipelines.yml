@@ -12,7 +12,7 @@ pool:
 variables:
   serviceName: ca-like
   imageName: ktasie/like-service:latest
-  dockerfilePath: services/like-service/Dockerfile
+  dockerfilePath: '$(Build.SourcesDirectory)/services/like-service/Dockerfile'
   buildContext: services/like-service
   resourceGroup: rg-photoapp-prod
   containerAppName: ca-like
