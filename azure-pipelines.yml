@@ -30,7 +30,7 @@ stages:
       displayName: Login to Docker registry
       inputs:
         command: login
-        containerRegistry: 'DockerHubConnection'  # define in ADO project settings
+        containerRegistry: 'dockerHubConnection'  # define in ADO project settings
 
     - task: Docker@2
       displayName: Build and push
