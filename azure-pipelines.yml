@@ -30,7 +30,7 @@ stages:
       displayName: Login to Docker registry
       inputs:
         command: login
-        containerRegistry: 'DockerHubServiceConnection'  # define in ADO project settings
+        containerRegistry: 'DockerHubConnection'  # define in ADO project settings
 
     - task: Docker@2
       displayName: Build and push
@@ -43,22 +43,4 @@ stages:
           $(Build.SourceVersion)
           latest
 
-- stage: Deploy
-  displayName: Deploy to Azure Container Apps
-  dependsOn: BuildAndPush
-  jobs:
-  - job: DeployJob
-    steps:
-    # Azure login via service connection
-    - task: AzureCLI@2
-      displayName: Update Container App image (new revision)
-      inputs:
-        azureSubscription: 'AzureServiceConnection'
-        scriptType: bash
-        scriptLocation: inlineScript
-        inlineScript: |
-          az extension add --name containerapp --upgrade
-          az containerapp update \
-            -g $(resourceGroup) \
-            -n $(containerAppName) \
-            --image $(imageName):$(Build.SourceVersion)
+
