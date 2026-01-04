@@ -29,11 +29,10 @@ if (process.env.NODE_ENV === 'development') {
       process.exit();
     });
 } else if (process.env.NODE_ENV === 'production') {
+  const DB = process.env.COSMOS_STRING.replace('<DBNAME>', process.env.MONGO_DB);
   mongoose
-    .connect(
-      `mongodb:${process.env.MONGO_USER}:${process.env.MONGO_PASS}//${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`
-    )
-    .then(() => console.log('Like service DB connection successful'))
+    .connect(DB)
+    .then(() => console.log('Like service Cosmos DB connection successful'))
     .catch((err) => {
       console.log(err.message);
       process.exit();

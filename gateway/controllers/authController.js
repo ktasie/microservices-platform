@@ -49,7 +49,7 @@ const login = async (req, res) => {
       headers: { 'content-Type': 'application/json' },
       body: raw,
     };
-    const resp = await fetch(`http://${process.env.AUTH_SERVICE}:${process.env.AUTH_PORT}/api/v1/login`, reqOptions);
+    const resp = await fetch(`${process.env.AUTH_SERVICE}/api/v1/login`, reqOptions);
     const data = await resp.json();
     // console.log(data);
     if (data.status === 'fail') {
@@ -62,6 +62,10 @@ const login = async (req, res) => {
     const cookieOptions = {
       expires: new Date(Date.now() + process.env.JWT_EXPIRES_IN * 3600 * 1000),
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      domain: process.env.NODE_ENV === 'production' ? '.francecentral.azurecontainerapps.io' : 'localhost',
+      path: '/',
     };
     res.cookie('jwt', token, cookieOptions);
     res.json({

@@ -16,7 +16,6 @@ const __dirname = path.dirname(__filename);
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-
 // Routes
 app.use('/api/v1/', photoRoute);
 
@@ -30,11 +29,11 @@ if (process.env.NODE_ENV === 'development') {
       process.exit(1);
     });
 } else if (process.env.NODE_ENV === 'production') {
+  const DB = process.env.COSMOS_STRING.replace('<DBNAME>', process.env.MONGO_DB);
+  console.log(DB);
   mongoose
-    .connect(
-      `mongodb:${process.env.MONGO_USER}:${process.env.MONGO_PASS}//${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}`
-    )
-    .then(() => console.log('Photo service DB connection successful'))
+    .connect(DB)
+    .then(() => console.log('Photo service Cosmos DB connection successful'))
     .catch((err) => {
       console.log(err.message);
       process.exit(1);
