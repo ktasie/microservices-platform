@@ -1,29 +1,64 @@
-# Docker
-# Build a Docker image
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 trigger:
-- main
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - services/service-a/**
 
-resources:
-- repo: self
+pool:
+  vmImage: node:24.12-alpine
 
 variables:
-  tag: '$(Build.BuildId)'
+  serviceName: ca-like
+  imageName: ktasie/like-service:latest
+  dockerfilePath: services/like-service/Dockerfile
+  buildContext: services/like-service
+  resourceGroup: rg-photoapp-prod
+  containerAppName: ca-like
 
 stages:
-- stage: Build
-  displayName: Build image
+- stage: BuildAndPush
+  displayName: Build and Push Image
   jobs:
   - job: Build
-    displayName: Build
-    pool:
-      vmImage: ubuntu-latest
     steps:
+    - checkout: self
+
+    # Docker login to Docker Hub (use a Service Connection if you can)
     - task: Docker@2
-      displayName: Build an image
+      displayName: Login to Docker registry
       inputs:
-        command: build
-        dockerfile: '**/Dockerfile'
+        command: login
+        containerRegistry: 'DockerHubServiceConnection'  # define in ADO project settings
+
+    - task: Docker@2
+      displayName: Build and push
+      inputs:
+        command: buildAndPush
+        repository: $(imageName)
+        dockerfile: $(dockerfilePath)
+        buildContext: $(buildContext)
         tags: |
-          $(tag)
+          $(Build.SourceVersion)
+          latest
+
+- stage: Deploy
+  displayName: Deploy to Azure Container Apps
+  dependsOn: BuildAndPush
+  jobs:
+  - job: DeployJob
+    steps:
+    # Azure login via service connection
+    - task: AzureCLI@2
+      displayName: Update Container App image (new revision)
+      inputs:
+        azureSubscription: 'AzureServiceConnection'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az extension add --name containerapp --upgrade
+          az containerapp update \
+            -g $(resourceGroup) \
+            -n $(containerAppName) \
+            --image $(imageName):$(Build.SourceVersion)
