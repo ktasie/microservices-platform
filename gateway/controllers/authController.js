@@ -2,8 +2,11 @@ import { promisify } from 'util';
 import fs from 'fs';
 import jwt from 'jsonwebtoken';
 
+//const PRIVATE_KEY_PATH = process.env.JWT_PRIVATE_KEY_PATH || "/keys/jwt_rsa";
+const PUBLIC_KEY_PATH = process.env.JWT_PUBLIC_KEY_PATH || './../keys/jwt_rsa.pub';
+
 // Read public key from filesystem to decode jwt
-const pubKey = fs.readFileSync('./../keys/jwt_rsa.pub', 'utf8');
+const pubKey = fs.readFileSync(PUBLIC_KEY_PATH, 'utf8');
 
 const protect = async (req, res, next) => {
   try {
@@ -46,9 +49,9 @@ const login = async (req, res) => {
       headers: { 'content-Type': 'application/json' },
       body: raw,
     };
-    const resp = await fetch('http://localhost:4001/api/v1/login', reqOptions);
+    const resp = await fetch(`${process.env.AUTH_SERVICE}/api/v1/login`, reqOptions);
     const data = await resp.json();
-    console.log(data);
+    // console.log(data);
     if (data.status === 'fail') {
       const err = new Error(data.message);
       err.statusCode = 401;
@@ -59,6 +62,10 @@ const login = async (req, res) => {
     const cookieOptions = {
       expires: new Date(Date.now() + process.env.JWT_EXPIRES_IN * 3600 * 1000),
       httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      domain: process.env.NODE_ENV === 'production' ? '.francecentral.azurecontainerapps.io' : 'localhost',
+      path: '/',
     };
     res.cookie('jwt', token, cookieOptions);
     res.json({

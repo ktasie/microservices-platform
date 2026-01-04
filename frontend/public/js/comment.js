@@ -31,7 +31,7 @@ const submitComment = async (e) => {
       credentials: 'include',
     };
 
-    const response = await fetch('http://localhost:4000/comment', requestOptions);
+    const response = await fetch(`${window.apiUrl}/comment`, requestOptions);
     if (!response.ok) {
       // HTTP error (4xx / 5xx)
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -70,7 +70,7 @@ const likePhoto = async (e) => {
       credentials: 'include',
     };
 
-    const response = await fetch(`http://localhost:4000/like/${domStrings.imageId.value}`, requestOptions);
+    const response = await fetch(`${window.apiUrl}/like/${domStrings.imageId.value}`, requestOptions);
     if (!response.ok) {
       // HTTP error (4xx / 5xx)
       throw new Error(`HTTP error! status: ${response.ok}`);

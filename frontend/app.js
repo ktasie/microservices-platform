@@ -1,4 +1,15 @@
 import 'dotenv/config';
+
+import appInsights from 'applicationinsights';
+
+appInsights
+  .setup(process.env.APPINSIGHTS_CONNECTION_STRING)
+  .setAutoCollectRequests(true)
+  .setAutoCollectDependencies(true)
+  .setAutoCollectExceptions(true)
+  .setAutoCollectConsole(true)
+  .setSendLiveMetrics(true) // <- important for Live Metrics
+  .start();
 import express from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';

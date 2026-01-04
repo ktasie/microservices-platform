@@ -7,9 +7,10 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { protect, login } from './controllers/authController.js';
 
 const app = express();
+app.set("trust proxy", 1)
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: `${process.env.FRONTEND_URL}`,
     credentials: true,
   })
 );
@@ -23,7 +24,7 @@ app.use(
   '/comment',
   protect,
   createProxyMiddleware({
-    target: 'http://localhost:4002/api/v1/comment',
+    target: `${process.env.COMMENT_SERVICE}/api/v1/comment`,
     changeOrigin: true,
     on: {
       proxyReq: (proxyReq, req, res) => {
@@ -39,7 +40,7 @@ app.use(
   '/like',
   protect,
   createProxyMiddleware({
-    target: 'http://localhost:4003/api/v1/like',
+    target: `${process.env.LIKE_SERVICE}/api/v1/like`,
     changeOrigin: true,
     on: {
       proxyReq: (proxyReq, req, res) => {
@@ -55,7 +56,7 @@ app.use(
   '/upload',
   protect,
   createProxyMiddleware({
-    target: 'http://localhost:4004/api/v1/photo',
+    target: `${process.env.PHOTO_SERVICE}/api/v1/photo`,
     changeOrigin: true,
     on: {
       proxyReq: (proxyReq, req, res) => {

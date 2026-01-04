@@ -3,7 +3,9 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import User from './../models/userModel.js';
 
-const privateKey = fs.readFileSync('./../../keys/jwt_rsa', 'utf8');
+const PRIVATE_KEY_PATH = process.env.JWT_PRIVATE_KEY_PATH || './../../keys/jwt_rsa';
+
+const privateKey = fs.readFileSync(PRIVATE_KEY_PATH, 'utf8');
 // console.log(privateKey)
 
 const signToken = (user) => {
