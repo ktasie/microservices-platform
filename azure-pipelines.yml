@@ -4,7 +4,7 @@ trigger:
       - main
   paths:
     include:
-      - services/service-a/**
+      - services/like-service/**
 
 pool:
   vmImage: node:24.12-alpine
