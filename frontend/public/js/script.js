@@ -1,3 +1,4 @@
+//console.log(window.apiUrl);
 // Declare all DOM variables
 const domStrings = {
   email: document.querySelector('#email'),
@@ -31,7 +32,7 @@ const login = async (e) => {
       redirect: 'follow',
     };
 
-    const resp = await fetch('http://localhost:4000/auth', reqOptions);
+    const resp = await fetch(`${window.apiUrl}/auth`, reqOptions);
     const dataObj = await resp.json();
 
     if (dataObj.status === 'success') {
@@ -42,7 +43,7 @@ const login = async (e) => {
       //redirectPostForm('form', 'POST', '/dashboard', dataString);
       window.location.href = '/dashboard';
     } else if (dataObj.status === 'fail') {
-    //   console.log(dataObj.data.message);
+      //   console.log(dataObj.data.message);
       throw new Error(`${dataObj.message}`);
     }
   } catch (err) {

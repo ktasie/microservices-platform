@@ -38,9 +38,9 @@ block content
                             data-url=(image.imageUrl || '')
                             data-id=(image._id || '')
                             data-location=(image.location || '')
-                            data-peoplePresent=(image.peoplePresent || '')
+                            data-people=(image.peoplePresent || '')
                         )
-                            a(href=`http://localhost:3000/upload/${image._id}`)
+                            a(href=`${frontendUrl}/upload/${image._id}`)
                                 img(src=`${image.imageUrl}`)
                                 h4= image.title
                                 p= image.caption

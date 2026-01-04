@@ -17,7 +17,7 @@
     const url = card.dataset.url || '';
     const id = card.dataset.id || '';
     const location = card.dataset.location || '';
-    const peoplePresent = card.dataset.peoplePresent || '';
+    const peoplePresent = card.dataset.people || '';
     return norm(`${title} ${caption} ${url} ${id} ${location} ${peoplePresent}`);
   };
 

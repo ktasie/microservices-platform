@@ -45,7 +45,7 @@ const uploadForm = async (e) => {
       redirect: 'follow',
     };
 
-    const response = await fetch('http://localhost:4000/upload', requestOptions);
+    const response = await fetch(`${window.apiUrl}/upload`, requestOptions);
     if (!response.ok) {
       // HTTP error (4xx / 5xx)
       throw new Error(`HTTP error! status: ${response.status}`);

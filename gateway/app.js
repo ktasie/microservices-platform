@@ -9,7 +9,7 @@ import { protect, login } from './controllers/authController.js';
 const app = express();
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: `http://${process.env.FRONTEND_URL}:${process.env.FRONTEND_PORT}`,
     credentials: true,
   })
 );
@@ -23,7 +23,7 @@ app.use(
   '/comment',
   protect,
   createProxyMiddleware({
-    target: 'http://localhost:4002/api/v1/comment',
+    target: `http://${process.env.COMMENT_SERVICE}:${process.env.COMMENT_PORT}/api/v1/comment`,
     changeOrigin: true,
     on: {
       proxyReq: (proxyReq, req, res) => {
@@ -39,7 +39,7 @@ app.use(
   '/like',
   protect,
   createProxyMiddleware({
-    target: 'http://localhost:4003/api/v1/like',
+    target: `http://${process.env.LIKE_SERVICE}:${process.env.LIKE_PORT}/api/v1/like`,
     changeOrigin: true,
     on: {
       proxyReq: (proxyReq, req, res) => {
@@ -55,7 +55,7 @@ app.use(
   '/upload',
   protect,
   createProxyMiddleware({
-    target: 'http://localhost:4004/api/v1/photo',
+    target: `http://${process.env.PHOTO_SERVICE}:${process.env.PHOTO_PORT}/api/v1/photo`,
     changeOrigin: true,
     on: {
       proxyReq: (proxyReq, req, res) => {
