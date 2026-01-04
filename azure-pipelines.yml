@@ -7,7 +7,7 @@ trigger:
       - services/like-service/**
 
 pool:
-  vmImage: node:24.12-alpine
+  vmImage: 'ubuntu-latest'
 
 variables:
   serviceName: ca-like
