@@ -11,8 +11,8 @@ pool:
 
 variables:
   serviceName: ca-like
-  imageName: ktasie/like-service:latest
-  dockerfilePath: '$(Build.SourcesDirectory)/services/like-service/Dockerfile'
+  imageName: ktasie/like-service
+  dockerfilePath: 'services/like-service/Dockerfile'
   buildContext: services/like-service
   resourceGroup: rg-photoapp-prod
   containerAppName: ca-like
@@ -40,7 +40,6 @@ stages:
         dockerfile: $(dockerfilePath)
         buildContext: $(buildContext)
         tags: |
-          $(Build.SourceVersion)
           latest
 
 
