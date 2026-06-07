@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 // import cookieParser from 'cookie-parser';
 import likeRoute from './routes/likeRoute.js';
 
-const port = process.env.PORT | 4000;
+const port = process.env.PORT || 4003;
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
