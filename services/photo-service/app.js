@@ -7,7 +7,7 @@ import mongoose from 'mongoose';
 // import cookieParser from 'cookie-parser';
 import photoRoute from './routes/photoRoute.js';
 
-const port = process.env.PORT | 4000;
+const port = process.env.PORT || 4004;
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

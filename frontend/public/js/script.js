@@ -11,7 +11,7 @@ const domStrings = {
 // Login to the backend endpoint
 const login = async (e) => {
   e.preventDefault();
-
+  submitBtn.textContent = 'Loading ...';
   try {
     // Load spinner
     //domStrings.progressBar.classList.remove('d-none');
@@ -47,6 +47,7 @@ const login = async (e) => {
       throw new Error(`${dataObj.message}`);
     }
   } catch (err) {
+    submitBtn.textContent = 'Login';
     domStrings.error.textContent = `${err.message}`;
     /*
     domStrings.progressBar.classList.add('d-none');
