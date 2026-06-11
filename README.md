@@ -1,54 +1,12 @@
 # Microservice Platform
 
-A cloud-native microservice platform built with Node.js and deployed on Microsoft Azure. The project was developed to gain practical experience in distributed system design, service decomposition, cloud deployment, containerization, observability, and CI/CD automation.
+A cloud-native media platform built with Node.js and deployed end-to-end on Microsoft Azure. The system decomposes a media-sharing backend into independently deployable services, each containerised with Docker and orchestrated via Azure Container Apps.
 
-The platform separates business functionality into independently deployable services, allowing individual components to be developed, deployed, monitored, and scaled independently.
-
----
-
-## Overview
-
-Traditional monolithic applications can become difficult to maintain and scale as functionality grows. This project explores how a microservice architecture can improve maintainability, fault isolation, deployment flexibility, and scalability by separating responsibilities into domain-specific services.
-
-The platform implements a distributed backend architecture consisting of:
-
-- Authentication Service
-- Comment Service
-- Like Service
-- Upload Service
-- API Gateway
-- Frontend Application
-
-Each service is packaged as a Docker container and deployed independently using Azure Container Apps.
+Services communicate through a custom-built API Gateway that centralises JWT verification using RS256 asymmetric signing, keeping individual services stateless and independently scalable.
 
 ---
 
 ## Architecture Diagram
-
-![System Architecture](assets/screenshots/architecture-diagram.png)
-
-_High-level overview of the microservice architecture deployed on Azure._
-
----
-
-## Key Engineering Concepts Demonstrated
-
-- Microservice Architecture
-- API Gateway Pattern
-- Stateless JWT Authentication
-- Docker Containerization
-- Azure Cloud Deployment
-- Independent Service Scaling
-- Blob-Based Media Storage
-- CI/CD Automation
-- Observability and Monitoring
-- Distributed Backend Design
-
----
-
-## Architecture
-
-### High-Level Architecture
 
 ```text
                          ┌──────────────────┐
@@ -57,8 +15,8 @@ _High-level overview of the microservice architecture deployed on Azure._
                                   │
                                   ▼
                          ┌──────────────────┐
-                         │   API Gateway    │
-                         └────────┬─────────┘
+                         │   API Gateway    │ ← JWT verification (RS256)
+                         └────────┬─────────┘   Route-based forwarding
                                   │
       ┌──────────────┬────────────┼────────────┬
       ▼              ▼            ▼            ▼
@@ -79,6 +37,10 @@ _High-level overview of the microservice architecture deployed on Azure._
      └──────────────┘         └────────────────┘
 ```
 
+## Database Design
+
+Services currently share a single Cosmos DB instance. In production, a database-per-service pattern would improve autonomy and reduce coupling — a deliberate tradeoff to keep operational complexity low while the focus was on service decomposition and deployment.
+
 ### Request Flow
 
 ```text
@@ -98,115 +60,116 @@ API Gateway
 
 The API Gateway acts as the single entry point into the backend and is responsible for request routing and JWT validation.
 
+![System Architecture](assets/screenshots/architecture-diagram.png)
+
+_High-level overview of the microservice architecture deployed on Azure._
+
 ---
 
 ## Services
 
+| Service         | Responsibility                                          | Port   |
+| --------------- | ------------------------------------------------------- | ------ |
+| API Gateway     | Request routing, JWT verification, auth enforcement     | `4000` |
+| Auth Service    | User login, JWT issuance (RS256)                        | `4001` |
+| Photo Service   | File upload, validation, Azure Blob Storage integration | `4004` |
+| Comment Service | Create and retrieve comments                            | `4002` |
+| Like Service    | Like/unlike content, engagement tracking                | `4003` |
+| Frontend        | Server-rendered UI (Pug), client-side content filtering | `3000` |
+
+---
+
+## API Reference
+
+All requests route through the gateway at `{{GATEWAY_BASE_URL}}:4000`. Protected routes require a `Bearer` token in the `Authorization` header or JWT cookie.
+
 ### Authentication Service
 
-Responsible for user authentication and authorization.
+| Method | Endpoint | Auth | Description                    |
+| ------ | -------- | ---- | ------------------------------ |
+| `POST` | `/auth`  | None | Authenticate user, returns JWT |
 
-**Features**
+**Login response:**
 
-- User login
-- JWT token generation
-- Token validation
-- Protected route access
+```json
+{
+  "status": "success",
+  "token": "eyJhbGciOiJSUzI1NiIs...",
+  "data": {
+     "user":{
+       "_id": "6a29a9...",
+       "firstName": "John",
+       ...
+     }
+  }
+}
+```
 
 ---
 
 ### Comment Service
 
-Handles user comments and engagement.
-
-**Features**
-
-- Create comments
-- Retrieve comments
+| Method | Endpoint            | Auth     | Description              |
+| ------ | ------------------- | -------- | ------------------------ |
+| `POST` | `/comment`          | Required | Add comment to a photo   |
+| `GET`  | `/comment/:photoId` | Required | Get comments for a photo |
 
 ---
 
 ### Like Service
 
-Manages user interaction metrics.
-
-**Features**
-
-- Like content
-- Unlike content
-- Engagement tracking
+| Method | Endpoint         | Auth     | Description              |
+| ------ | ---------------- | -------- | ------------------------ |
+| `POST` | `/like/:photoId` | Required | Like a photo             |
+| `GET`  | `/like/:photoId` | Required | Get all likes of a photo |
 
 ---
 
-### Upload Service
+### Photo Service
 
-Handles file upload and media management.
-
-**Features**
-
-- Upload media files
-- File validation
-- Metadata management
-- Azure Blob Storage integration
-
----
-
-### API Gateway
-
-Central routing layer for backend services.
-
-**Responsibilities**
-
-- Request routing
-- JWT verification
-- Authentication enforcement
-- Service forwarding
-
----
-
-### Frontend
-
-Server-rendered web application providing user interaction with backend services.
-
-**Features**
-
-- Authentication workflows
-- Media uploads
-- Comment management
-- Content interaction
-- Client-side content filtering
+| Method | Endpoint           | Auth     | Description        |
+| ------ | ------------------ | -------- | ------------------ |
+| `POST` | `/upload`          | Required | Upload media file  |
+| `GET`  | `/upload`          | Required | List all photos    |
+| `GET`  | `/upload/:photoId` | Required | List photo details |
 
 ---
 
 ## Technology Stack
 
-### Backend
+| Layer            | Technology                                 |
+| ---------------- | ------------------------------------------ |
+| Runtime          | Node.js + Express.js                       |
+| Auth             | JSON Web Tokens — RS256 asymmetric signing |
+| Database         | Azure Cosmos DB (MongoDB-compatible API)   |
+| Media storage    | Azure Blob Storage                         |
+| Containerisation | Docker                                     |
+| Hosting          | Azure Container Apps                       |
+| CI/CD            | Azure DevOps + Docker Hub                  |
+| Monitoring       | Azure Application Insights                 |
+| Templating       | Pug                                        |
 
-- Node.js
-- Express.js
-- JSON Web Tokens (JWT)
+---
 
-### Database
+## Engineering Decisions
 
-- Azure Cosmos DB (MongoDB API)
+**RS256 over HS256 for JWT signing**
+Asymmetric signing means the private key lives only in the Auth Service. All other services verify tokens using the public key — no shared secret distributed across the system.
 
-### Storage
+**Custom API Gateway over a managed solution**
+Building the gateway in Express gave precise control over routing logic and JWT middleware. It enforces auth at the network boundary so individual services remain stateless and don't duplicate verification logic.
 
-- Azure Blob Storage
+**Cosmos DB with MongoDB-compatible API**
+Using the MongoDB-compatible interface avoids locking data access patterns to a vendor-specific query API, while still benefiting from Cosmos DB's managed scaling and global distribution.
 
-### Infrastructure
+**Externalised media storage (Azure Blob)**
+Storing media outside the application tier keeps services stateless and avoids disk I/O coupling between the photo service and its replicas.
 
-- Docker
-- Azure Container Apps
+**Stateless services and replica-based scaling**
+Because JWT verification is handled at the gateway and media is stored in Azure Blob, no service holds local state. This means any service can be horizontally scaled by adding replicas on Azure Container Apps without session affinity or shared disk concerns.
 
-### Monitoring (Optional)
-
-- Azure Application insights integration for frontend page views.
-
-### DevOps
-
-- Azure DevOps
-- Docker Hub
+**Synchronous HTTP between services**
+Chosen for simplicity at this scale. The tradeoff is tighter temporal coupling — a downstream service outage stalls the caller. An event-driven approach (message queue) would be preferable at higher throughput.
 
 ---
 
@@ -214,38 +177,25 @@ Server-rendered web application providing user interaction with backend services
 
 ```text
 microservices-platform/
-│
 ├── frontend/
 ├── gateway/
-├── services
-|   ├── auth-service/
-|   ├── comment-service/
-|   ├── like-service/
-|   ├── photo-service/
-│
+├── services/
+│   ├── auth-service/
+│   ├── comment-service/
+│   ├── like-service/
+│   └── photo-service/
 ├── assets/
 │   └── screenshots/
-│       ├── architecture-diagram.png
-│       ├── login-page.png
-│       ├── home-feed.png
-│       ├── upload-page.png
-│       ├── comment-page.png
-│       ├── like-page.png
-│       ├── azure-container-apps.png
-│       ├── azure-cosmosdb.png
-│       ├── azure-blob-storage.png
-│       ├── azure-app-insights.png
-│       └── azure-devops-pipeline.png
-│
-├── README.md
-└── azure-pipelines.yml
+├── docker-compose.yml
+├── azure-pipelines.yml
+└── README.md
 ```
 
 ---
 
 ## JWT Key Configuration
 
-This application uses RS256 JWT signing and requirs RSA key pair.
+The platform uses RS256. Generate a key pair before running locally:
 
 Generate the keys:
 
@@ -254,17 +204,46 @@ openssl genpkey -algorithm RSA -out jwt_rsa -pkeyopt rsa_keygen_bits:2048
 openssl rsa -pubout -in private.pem -out jwt_rsa.pub
 ```
 
-Place the generated files in the configured key directories as per microservice:
+Place the generated files in `keys/` at the root directory of the mono repo:
 
 ```text
-keys/
-├── jwt_rsa
-└── jwt_rsa.pub
+microservice-platform/
+├── keys/
+    ├── jwt_rsa
+    └── jwt_rsa.pub
 ```
 
+Reference the keys/ path in each service's .env and .env.docker file via the JWT_PRIVATE_KEY_PATH / JWT_PUBLIC_KEY_PATH variables."
 The application loads these files at startup for JWT signing and verification.
 
 > Important: Do not commit `jwt_rsa` to version control.
+
+---
+
+### Environment Variables
+
+Each service is configured via environment variables. Copy the example files and fill in values:
+
+```bash
+cp services/auth-service/.env.example services/auth-service/.env
+# repeat for each service
+```
+
+| Variable                         | Description                                    |
+| -------------------------------- | ---------------------------------------------- |
+| `COSMOS_CONNECTION_STRING`       | Azure Cosmos DB connection string              |
+| `BLOB_STORAGE_CONNECTION_STRING` | Azure Blob Storage connection string           |
+| `JWT_PRIVATE_KEY_PATH`           | Path to `jwt_rsa` (Auth Service only)          |
+| `JWT_PUBLIC_KEY_PATH`            | Path to `jwt_rsa.pub`                          |
+| `FRONTEND_URL`                   | URL used to access the frontend                |
+| `NODE_ENV`                       | use `development` for local install and docker |
+
+For docker:
+
+```bash
+cp services/auth-service/.env.example services/auth-service/.env.docker
+# repeat for each service
+```
 
 ---
 
@@ -283,38 +262,6 @@ The platform is deployed on Microsoft Azure using a container-based architecture
 | Azure Log Analytics  | Monitoring and diagnostics      |
 | Azure DevOps         | Build and deployment automation |
 
-### Deployment Characteristics
-
-- Independent service deployment
-- Containerized workloads
-- Stateless authentication
-- Multi-replica deployment
-- Fault isolation between services
-- Cloud-managed storage
-
----
-
-## Scalability Design
-
-The system was designed with scalability in mind.
-
-### Implemented Approaches
-
-- Stateless JWT authentication
-- Independent microservices
-- Containerized deployments
-- Replica-based scaling
-- Externalized media storage
-- Decoupled business domains
-
-### Benefits
-
-- Reduced coupling
-- Easier maintenance
-- Independent deployments
-- Improved fault isolation
-- Better scalability potential
-
 ---
 
 ## Screenshots
@@ -323,15 +270,11 @@ The system was designed with scalability in mind.
 
 ![Login Page](assets/screenshots/login-page.png)
 
-_JWT-based authentication workflow._
-
 ---
 
 ### Home Feed
 
 ![Home Feed](assets/screenshots/home-feed.png)
-
-_Main application interface displaying uploaded content._
 
 ---
 
@@ -339,15 +282,11 @@ _Main application interface displaying uploaded content._
 
 ![Upload Service](assets/screenshots/upload.png)
 
-_Media upload workflow integrated with Azure Blob Storage._
-
 ---
 
 ### Comment and Like Functionality
 
 ![Comment Service](assets/screenshots/comment-like.png)
-
-_Users can comment and Like through the Comment Service and Like Service._
 
 ---
 
@@ -397,8 +336,8 @@ _Build and deployment automation workflow._
 
 ### Prerequisites
 
-- Node.js
-- MongoDB
+- Node.js `24.12.0`
+- MongoDB (local instance or Docker)
 - Docker
 - Azurite (Azure Storage Emulator)
 
@@ -414,7 +353,12 @@ cd microservices-platform
 Run for each service:
 
 ```bash
-npm install
+cd services/auth-service && npm install
+cd ../comment-service && npm install
+cd ../like-service && npm install
+cd ../photo-service && npm install
+cd ../../gateway && npm install
+cd ../frontend && npm install
 ```
 
 ### Start Local Infrastructure
@@ -435,91 +379,45 @@ node app.js
 
 Each microservice must be started independently.
 
+### For Docker setup
+
+Use the root-level `docker-compose.yml` to start all services together:
+
+```bash
+docker-compose up --build
+```
+
 ---
 
 ## CI/CD
 
-Azure DevOps was used to support deployment automation and improve release consistency.
+Defined in `azure-pipelines.yml`. On push to `main`:
 
-The deployment workflow includes:
+1. Source pulled from repository
+2. Docker image built per service
+3. Image pushed to Docker Hub
+4. Service deployed to Azure Container Apps
 
-- Source control integration
-- Container image builds
-- Docker Hub publishing
-- Azure deployment support
-
-This reduces manual deployment effort and provides a repeatable deployment process.
+Each service has its own pipeline stage, so a change to the Like Service doesn't trigger a redeploy of Auth.
 
 ---
 
 ## Monitoring & Observability
 
-Operational visibility is provided through Azure Log Analytics.
-
-Monitored metrics include:
-
-- Application logs
-- Error diagnostics
-- Request monitoring
-- Service health information
-
-This enables troubleshooting and operational monitoring after deployment.
+Operational visibility is provided through Application Insights. This is accessible via the Azure portal after deployment.
 
 ---
 
-## Current Limitations
+## Known Tradeoffs
 
-The project was primarily designed as a learning platform for distributed systems and cloud-native deployment.
-
-Current limitations include:
-
-- No automated unit tests
-- No automated integration tests
-- Limited request validation
-- Single-region deployment
-- Synchronous HTTP communication between services
-- Client-side filtering instead of dedicated search infrastructure
-- Limited production-grade monitoring and tracing
+| Area                  | Current state                      | Better approach at scale                                           |
+| --------------------- | ---------------------------------- | ------------------------------------------------------------------ |
+| Service communication | Synchronous HTTP                   | Message queue (e.g. Azure Service Bus) for async decoupling        |
+| Search / filtering    | Client-side filtering              | Dedicated search index (e.g. Azure Cognitive Search)               |
+| Testing               | No automated tests                 | Unit tests per service + contract tests at the gateway boundary    |
+| Observability         | Log Analytics + basic App Insights | Distributed tracing (e.g. OpenTelemetry) across service boundaries |
+| Deployment            | Single-region                      | Multi-region with Azure Front Door + WAF                           |
 
 ---
 
-## Future Improvements
-
-Potential future enhancements include:
-
-- Comprehensive unit and integration testing
-- Distributed tracing
-- Event-driven communication
-- Message queue integration
-- Redis caching
-- Azure Front Door integration
-- Web Application Firewall (WAF)
-- Multi-region deployment
-- Advanced search functionality
-- Enhanced monitoring dashboards
-
----
-
-## Learning Outcomes
-
-This project provided hands-on experience with:
-
-- Designing distributed systems
-- Building microservices
-- Cloud-native application deployment
-- Docker containerization
-- Azure infrastructure services
-- JWT authentication and authorization
-- CI/CD practices
-- Observability and monitoring
-- Scalability considerations in modern backend systems
-
-The platform serves as a practical demonstration of how modern cloud applications can be decomposed into independently deployable services while maintaining scalability and operational flexibility.
-
----
-
-## Author
-
-**Kelechukwu Tasie**
-
-Project Repository: https://github.com/ktasie/microservices-platform
+**Kelechukwu Tasie** · [github.com/ktasie/microservices-platform](https://github.com/ktasie/microservices-platform)
