@@ -64,9 +64,14 @@ const login = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      domain: process.env.NODE_ENV === 'production' ? '.francecentral.azurecontainerapps.io' : 'localhost',
       path: '/',
     };
+
+    // Set cookie domain if defined.
+    if (process.env.COOKIE_DOMAIN) {
+      cookieOptions.domain = process.env.COOKIE_DOMAIN;
+    }
+
     res.cookie('jwt', token, cookieOptions);
     res.json({
       status: data.status,

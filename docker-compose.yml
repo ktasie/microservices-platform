@@ -1,0 +1,99 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - ./frontend/.env.docker
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./keys/jwt_rsa.pub:/keys/jwt_rsa.pub:ro
+    depends_on:
+      - gateway
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    env_file:
+      - ./gateway/.env.docker
+    ports:
+      - '4000:4000'
+    volumes:
+      - ./keys/jwt_rsa.pub:/keys/jwt_rsa.pub:ro
+    depends_on:
+      - auth-service
+      - comment-service
+      - like-service
+      - photo-service
+
+  auth-service:
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./services/auth-service/.env.docker
+    ports:
+      - '4001:4001'
+    depends_on:
+      - mongo
+    volumes:
+      - ./keys:/keys:ro
+
+  comment-service:
+    build:
+      context: ./services/comment-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./services/comment-service/.env.docker
+    ports:
+      - '4002:4002'
+    depends_on:
+      - mongo
+
+  like-service:
+    build:
+      context: ./services/like-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./services/like-service/.env.docker
+    ports:
+      - '4003:4003'
+    depends_on:
+      - mongo
+
+  photo-service:
+    build:
+      context: ./services/photo-service
+      dockerfile: Dockerfile
+    env_file:
+      - ./services/photo-service/.env.docker
+    ports:
+      - '4004:4004'
+    depends_on:
+      - mongo
+      - azurite
+
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: azurite
+    command: azurite --blobHost 0.0.0.0
+    restart: unless-stopped
+    ports:
+      - '10000:10000'
+    volumes:
+      - azurite-data:/data
+
+volumes:
+  mongo-data:
+  azurite-data:

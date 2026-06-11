@@ -83,13 +83,19 @@ const uploadPhoto = async (req, res) => {
       },
     });
 
+    // quick fix for containers with azurite.
+    const imageUrl =
+      process.env.NODE_ENV === 'development'
+        ? blockBlobClient.url.replace('http://azurite:10000', 'http://localhost:10000')
+        : blockBlobClient.url;
+
     const newPhoto = await Photo.create({
       uploadedBy: userId,
       title,
       caption,
       location,
       peoplePresent,
-      imageUrl: blockBlobClient.url,
+      imageUrl,
       blobName,
     });
 
