@@ -254,17 +254,17 @@ openssl genpkey -algorithm RSA -out jwt_rsa -pkeyopt rsa_keygen_bits:2048
 openssl rsa -pubout -in private.pem -out jwt_rsa.pub
 ```
 
-Place the generated files in the configured key directories:
+Place the generated files in the configured key directories as per microservice:
 
 ```text
 keys/
-├── private.pem
-└── public.pem
+├── jwt_rsa
+└── jwt_rsa.pub
 ```
 
 The application loads these files at startup for JWT signing and verification.
 
-> Important: Do not commit `private.pem` to version control.
+> Important: Do not commit `jwt_rsa` to version control.
 
 ---
 

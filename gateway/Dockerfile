@@ -15,7 +15,7 @@ COPY . .
 # (Alpine node image already has "node" user)
 USER node
 
-EXPOSE 3000
+EXPOSE 4000
 
 # Start your SSR server
 CMD ["node", "app.js"]

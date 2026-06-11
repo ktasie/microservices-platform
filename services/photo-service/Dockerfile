@@ -11,11 +11,12 @@ RUN npm ci --omit=dev
 # Copy your app source
 COPY . .
 
+
 # Optional but nice: don't run as root
 # (Alpine node image already has "node" user)
 USER node
 
-EXPOSE 3000
+EXPOSE 4004
 
 # Start your SSR server
 CMD ["node", "app.js"]
