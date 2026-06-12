@@ -384,8 +384,38 @@ Each microservice must be started independently.
 Use the root-level `docker-compose.yml` to start all services together:
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
+
+### Load Seeders
+
+To populate the database with initial data for local development:
+
+**Without Docker:**
+
+```bash
+cd services/auth-service/
+node seed-users.js
+```
+
+**With docker:**
+
+```bash
+docker compose exec auth-service node seed-users.js
+```
+
+---
+
+### Default Credentials
+
+Navigate to your web browser and type `http://{{FRONTEND_URL}}:3000/`. Use the credentials below to login.
+
+| Role          | User                   | Password      |
+| ------------- | ---------------------- | ------------- |
+| Administrator | `john.doe@example.com` | `StrongPass`  |
+| Normal User   | `ktasie@example.com`   | `AnotherPass` |
+
+> These credentials are for local development only. Never use default credentials in a production environment.
 
 ---
 
