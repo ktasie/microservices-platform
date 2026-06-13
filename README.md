@@ -4,6 +4,10 @@ A cloud-native media platform built with Node.js and deployed end-to-end on Micr
 
 Services communicate through a custom-built API Gateway that centralises JWT verification using RS256 asymmetric signing, keeping individual services stateless and independently scalable.
 
+![System Architecture](assets/screenshots/architecture-diagram.png)
+
+_High-level overview of the microservice architecture deployed on Azure._
+
 ---
 
 ## Architecture Diagram
@@ -59,10 +63,6 @@ API Gateway
 ```
 
 The API Gateway acts as the single entry point into the backend and is responsible for request routing and JWT validation.
-
-![System Architecture](assets/screenshots/architecture-diagram.png)
-
-_High-level overview of the microservice architecture deployed on Azure._
 
 ---
 
@@ -148,6 +148,22 @@ All requests route through the gateway at `{{GATEWAY_BASE_URL}}:4000`. Protected
 | CI/CD            | Azure DevOps + Docker Hub                  |
 | Monitoring       | Azure Application Insights                 |
 | Templating       | Pug                                        |
+
+---
+
+## Deployment Flow
+
+```text
+Git Push
+    ↓
+Azure DevOps
+    ↓
+Docker Build
+    ↓
+Docker Hub
+    ↓
+Azure Container Apps
+```
 
 ---
 
@@ -330,6 +346,12 @@ _Application Insights integration._
 
 _Build and deployment automation workflow._
 
+### Docker Hub Registry
+
+![Docker Hub](assets/screenshots/docker-hub-repositories.png)
+
+> Container images are versioned and published automatically through Azure DevOps
+
 ---
 
 ## Local Development
@@ -426,9 +448,7 @@ Defined in `azure-pipelines.yml`. On push to `main`:
 1. Source pulled from repository
 2. Docker image built per service
 3. Image pushed to Docker Hub
-4. Service deployed to Azure Container Apps
-
-Each service has its own pipeline stage, so a change to the Like Service doesn't trigger a redeploy of Auth.
+4. Azure Container Apps updated
 
 ---
 
